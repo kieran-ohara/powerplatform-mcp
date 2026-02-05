@@ -60,6 +60,7 @@ export function registerRecordTools(server: McpServer, ctx: ServiceContext): voi
         entityNamePlural: z.string().describe("The plural name of the entity (e.g., 'accounts', 'contacts')"),
         filter: z.string().describe("OData filter expression (e.g., \"name eq 'test'\" or \"createdon gt 2023-01-01\")"),
         maxRecords: z.number().optional().describe("Maximum number of records to retrieve (default: 50)"),
+        orderby: z.string().optional().describe("OData orderby expression (e.g., \"createdon desc\" or \"name asc\")"),
       },
       outputSchema: z.object({
         entityNamePlural: z.string(),
@@ -68,10 +69,10 @@ export function registerRecordTools(server: McpServer, ctx: ServiceContext): voi
         records: z.any(),
       }),
     },
-    async ({ entityNamePlural, filter, maxRecords }) => {
+    async ({ entityNamePlural, filter, maxRecords, orderby }) => {
       try {
         const service = ctx.getRecordService();
-        const records = await service.queryRecords(entityNamePlural, filter, maxRecords || 50);
+        const records = await service.queryRecords(entityNamePlural, filter, maxRecords || 50, orderby);
         const recordCount = records.value?.length || 0;
 
         return {

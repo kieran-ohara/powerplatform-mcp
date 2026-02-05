@@ -23,11 +23,14 @@ export class RecordService {
    * @param entityNamePlural The plural name of the entity (e.g., 'accounts', 'contacts')
    * @param filter OData filter expression (e.g., "name eq 'test'")
    * @param maxRecords Maximum number of records to retrieve (default: 50)
+   * @param orderby OData orderby expression (e.g., "createdon desc" or "name asc")
    * @returns Filtered list of records
    */
-  async queryRecords(entityNamePlural: string, filter: string, maxRecords: number = 50): Promise<ApiCollectionResponse<any>> {
-    return this.client.get<ApiCollectionResponse<any>>(
-      `api/data/v9.2/${entityNamePlural}?$filter=${encodeURIComponent(filter)}&$top=${maxRecords}`
-    );
+  async queryRecords(entityNamePlural: string, filter: string, maxRecords: number = 50, orderby?: string): Promise<ApiCollectionResponse<any>> {
+    let url = `api/data/v9.2/${entityNamePlural}?$filter=${encodeURIComponent(filter)}&$top=${maxRecords}`;
+    if (orderby) {
+      url += `&$orderby=${encodeURIComponent(orderby)}`;
+    }
+    return this.client.get<ApiCollectionResponse<any>>(url);
   }
 }
